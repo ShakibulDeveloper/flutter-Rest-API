@@ -17,7 +17,7 @@ class HomeScreenUI extends State<HomeScreen> {
   bool inProgress = false;
   List<Product> productList = [];
 
-  void getProductList() async {
+  Future<void> getProductList() async {
     Response response =
         await get(Uri.parse('https://crud.teamrabbil.com/api/v1/ReadProduct'));
 
@@ -41,6 +41,22 @@ class HomeScreenUI extends State<HomeScreen> {
         setState(() {});
       }
     }
+  }
+
+  Future<void> deleteProduct(String productID) async {
+    inProgress = true;
+    setState(() {});
+
+    Response response = await get(Uri.parse(
+        'https://crud.teamrabbil.com/api/v1/DeleteProduct/$productID'));
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      productList.clear();
+      getProductList();
+    }
+
+    inProgress = false;
+    setState(() {});
   }
 
   @override
@@ -78,7 +94,10 @@ class HomeScreenUI extends State<HomeScreen> {
               shrinkWrap: true,
               itemCount: productList.length,
               itemBuilder: (context, index) {
-                return ProductListCard(product: productList[index]);
+                return ProductListCard(
+                  product: productList[index],
+                  onPressedProductDelete: deleteProduct,
+                );
               }),
     );
   }

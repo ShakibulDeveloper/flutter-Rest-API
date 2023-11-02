@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:restapi/models/product.dart';
+import 'package:restapi/screens/product_add_screen.dart';
 
 class ProductListCard extends StatelessWidget {
   final Product product;
-  const ProductListCard({super.key, required this.product});
+  const ProductListCard(
+      {super.key, required this.product, required this.onPressedProductDelete});
+
+  final Function(String) onPressedProductDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +16,7 @@ class ProductListCard extends StatelessWidget {
         showDialog(
             context: context,
             builder: (context) {
-              return productCardDialogAction();
+              return productCardDialogAction(context);
             });
       },
       child: Card(
@@ -64,20 +68,32 @@ class ProductListCard extends StatelessWidget {
   }
 
   //======PRODUCT_LIST_CARD_ACTION=======
-  AlertDialog productCardDialogAction() {
-    return const AlertDialog(
-      title: Text("Select Option"),
+  AlertDialog productCardDialogAction(context) {
+    return AlertDialog(
+      title: const Text("Select Option"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: Icon(Icons.edit),
-            title: Text("Update"),
+            leading: const Icon(Icons.edit),
+            title: const Text("Update"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ProductAddScreen(product: product)));
+            },
           ),
           Divider(height: 0),
           ListTile(
             leading: Icon(Icons.delete),
             title: Text("Delete"),
+            onTap: () {
+              Navigator.pop(context);
+              onPressedProductDelete(product.id);
+            },
           ),
         ],
       ),
